@@ -7,7 +7,7 @@
  * line to set OPT properly */
 // #define OPT 1
 
-typedef struct __DETAIL {
+typedef struct __PHONE_BOOK_DETAIL {
     char firstName[16];
     char email[16];
     char phone[10];
