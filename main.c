@@ -36,6 +36,11 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+#if defined(OPT)
+    int tableSize = 48611;
+    hashTable *ht = createHashTable(tableSize);
+    printf("hash table size (prime number) : %d\n", tableSize);
+#endif
     /* build the entry */
     entry *pHead, *e;
     pHead = (entry *) malloc(sizeof(entry));
@@ -43,16 +48,22 @@ int main(int argc, char *argv[])
     e = pHead;
     e->pNext = NULL;
 
+
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
+
     clock_gettime(CLOCK_REALTIME, &start);
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
             i++;
         line[i - 1] = '\0';
         i = 0;
+#if defined(OPT)
+        appendHash(line, ht);
+#else
         e = append(line, e);
+#endif
     }
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
@@ -60,22 +71,33 @@ int main(int argc, char *argv[])
     /* close file as soon as possible */
     fclose(fp);
 
-    e = pHead;
-
     /* the givn last name to find */
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
     e = pHead;
 
+#if defined(OPT)
+    assert(findNameHash(input, ht) &&
+           "Did you implement findName() in " IMPL "?");
+    assert(0 == strcmp(findNameHash(input, ht)->lastName, "zyxel"));
+#else
     assert(findName(input, e) &&
            "Did you implement findName() in " IMPL "?");
     assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
+#endif
+
+
 
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
+
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
+#if defined(OPT)
+    findNameHash(input, ht);
+#else
     findName(input, e);
+#endif
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
 

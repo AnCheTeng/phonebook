@@ -29,4 +29,19 @@ typedef struct __PHONE_BOOK_ENTRY {
 entry *findName(char lastName[], entry *pHead);
 entry *append(char lastName[], entry *e);
 
+// hash-optimization
+
+typedef unsigned int hashIndex;
+typedef struct __PHONE_BOOK_HASH_TABLE {
+    unsigned int size;
+    entry** list;
+} hashTable;
+
+hashTable *createHashTable(int tableSize);
+entry* findNameHash(char *key, hashTable *ht);
+entry* appendHash(char *key, hashTable *ht);
+
+hashIndex BDKRhash(char *key, hashTable *ht);
+hashIndex APhash(char *key, hashTable *ht);
+
 #endif
